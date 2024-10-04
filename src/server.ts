@@ -1,13 +1,14 @@
 import express from 'express'
-import { Services } from './service';
+import { Currency } from './Currency_Serv';
+import { environment } from './environment';
 
 
 class server {
 
-    public app: express.Application;
+    private app: express.Application;
 
     constructor(
-        private services: Services = new Services()
+        private currency: Currency = new Currency()
     ) {
         this.app = express();
         this.config()
@@ -16,8 +17,8 @@ class server {
     start() {
         //inicializa express
         this.app.listen(this.app.get('port'), () => {
-            console.log('Backend listo en el Puerto', this.app.get('port'));
-            console.log('Version V1.0.0')
+            console.log('Exchange Currency listo en el Puerto', this.app.get('port'));
+            console.log(`Version ${environment.Version}`)
         })
     }
 
@@ -37,17 +38,47 @@ class server {
         this.Routes()
     }
 
-    Routes(){
+    Routes() {
+        //Aca se configuran todas las rutas del API
         try {
-            
-            this.app.get('/',async (req:any, res:any)=>{
-                this.services.GetAxios("https://api.currencyapi.com/v3/latest?apikey=cur_live_7nuFRH15HPWq1U250d53aEOYECqflUkQLXCe3pAY&currencies=VES")
+
+            this.app.get('/', async (req: any, res: any) => {
                 res.send('Bienvenido al backend')
             })
-            
+
+            this.app.get('/GetPrice', async (req: any, res: any) => {
+                try {
+                    this.currency.GetPrice().then((Prices: any) => {//Busca el precio de las monedas
+                        res.status(200)
+                        res.json(Prices)
+                    }).catch(err => {
+                        console.error(err)
+                        res.status(500)
+                        res.json({ status: false, message: "Internal server error" })
+                    })
+                } catch (error) {
+                    console.error(error)
+                }
+            })
+
+            this.app.post('/SetPrice', async (req: any, res: any) => {
+                //Mosidica el precio una moneda
+                if (req.body.moneda != undefined && req.body.monto != undefined) {
+                    this.currency.SetPriceCurrency(req.body.moneda, req.body.monto).then((Update: any) => {
+                        res.status(200)
+                        res.json(Update)
+                    }).catch(err => {
+                        console.error(err)
+                        res.status(500)
+                        res.json({ status: false, message: "Internal server error" })
+                    })
+                } else {
+                    res.status(400)
+                    res.json({ status: false, message: "Bad request" })
+                }
+            })
 
         } catch (error) {
-            console.log(new Date())
             console.error(error)
         }
     }
