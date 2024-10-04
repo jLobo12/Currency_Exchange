@@ -62,7 +62,7 @@ class server {
             })
 
             this.app.post('/SetPrice', async (req: any, res: any) => {
-                //Mosidica el precio una moneda
+                //Modifica el precio una moneda
                 if (req.body.moneda != undefined && req.body.monto != undefined) {
                     this.currency.SetPriceCurrency(req.body.moneda, req.body.monto).then((Update: any) => {
                         res.status(200)
