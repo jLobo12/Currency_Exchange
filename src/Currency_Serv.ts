@@ -13,7 +13,7 @@ export class Currency {
         //Metodo para consultar el precio del Bs y el Euro basados en USD
         return new Promise(async (resolve: any, reject: any) => {
             try {
-                let Price_BS_EUR = []
+                let Price_BS_EUR: any = []
 
                 //Consulto el API para obtener el precio del Bs y el euro
                 this.service.GetAxios(`${environment.currencyapi.UrlBase}latest?apikey=${environment.currencyapi.ApiKey}&currencies=VES,EUR`).then((BS_EUR_Data: any) => {
@@ -83,8 +83,8 @@ export class Currency {
 
                 this.service.GetAxios(`${environment.coinranking.UrlBase}coins`).then(async (CryptoData: any) => {
                     const CoinsDatos = CryptoData.data.coins
-                    let GlobalCrypto = []
-                    let CoinsCrypto = []
+                    let GlobalCrypto: any = []
+                    let CoinsCrypto: any = []
 
                     //Se buscan las monedas solicitadas entre el lote de todas las
                     GlobalCrypto.push(CoinsDatos.find((v: any) => v.symbol == 'BTC'))
@@ -146,7 +146,7 @@ export class Currency {
             try {
                 //Se consultal ambos metodo y se espera a tener la repuestas de ambos
                 Promise.allSettled([this.GetPriceBsAndEur(), this.GetPriceCrypto()]).then((Values: any) => {
-                    let AllPrice = []
+                    let AllPrice:any = []
 
                     //Se recorre ambos arreglos con la data de ambos metodos y se unen en un solo arreglo
                     for (let index = 0; index < Values.length; index++) {
